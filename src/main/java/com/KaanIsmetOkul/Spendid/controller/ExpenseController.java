@@ -2,15 +2,21 @@ package com.KaanIsmetOkul.Spendid.controller;
 
 import com.KaanIsmetOkul.Spendid.entity.Expense;
 import com.KaanIsmetOkul.Spendid.entity.ExpenseCategory;
+import com.KaanIsmetOkul.Spendid.entity.User;
 import com.KaanIsmetOkul.Spendid.exceptionHandling.CategoryNotFound;
+import com.KaanIsmetOkul.Spendid.exceptionHandling.ResourceNotFound;
+import com.KaanIsmetOkul.Spendid.exceptionHandling.UserNotFound;
 import com.KaanIsmetOkul.Spendid.repository.ExpenseRepository;
+import com.KaanIsmetOkul.Spendid.repository.UserRepository;
 import com.KaanIsmetOkul.Spendid.service.ExpenseService;
+import com.KaanIsmetOkul.Spendid.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -21,7 +27,13 @@ public class ExpenseController {
     private ExpenseRepository expenseRepository;
 
     @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
     private ExpenseService expenseService;
+
+    @Autowired
+    private UserService userService;
 
     @GetMapping("/expense")
     public List<Expense> getAllExpenses() {
@@ -43,8 +55,21 @@ public class ExpenseController {
             throw new CategoryNotFound("Unable to find the category for expense");
         }
     }
-    public ResponseEntity<Expense> saveExpense(@RequestBody Expense expense) {
-        Expense savedExpense = expenseService.saveExpense(expense);
-        return new ResponseEntity<>(savedExpense, HttpStatus.CREATED);
+
+    @PostMapping("/expense/user/{id}")
+    public ResponseEntity<Expense> saveExpense(@RequestBody Expense expense, @PathVariable UUID id) {
+        try {
+            Expense savedExpense = expenseService.saveExpense(expense);
+            Optional<User> optionalUser = userRepository.findById(id);
+            if (optionalUser.isEmpty())
+                throw new UserNotFound("Unable to find the user to save expense");
+            User user = optionalUser.get();
+            userService.saveUserExpense(user, expense);
+            return new ResponseEntity<>(savedExpense, HttpStatus.CREATED);
+        }
+
+        catch (IllegalArgumentException e) {
+            throw new ResourceNotFound("Unable to find expense and userId");
+        }
     }
 }

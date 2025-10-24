@@ -1,5 +1,6 @@
 package com.KaanIsmetOkul.Spendid.service;
 
+import com.KaanIsmetOkul.Spendid.entity.Expense;
 import com.KaanIsmetOkul.Spendid.entity.User;
 import com.KaanIsmetOkul.Spendid.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,5 +18,10 @@ public class UserService {
     public User saveUser(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
+    }
+
+    public void saveUserExpense(User user, Expense expense) {
+        user.addExpense(expense);
+        userRepository.save(user);
     }
 }

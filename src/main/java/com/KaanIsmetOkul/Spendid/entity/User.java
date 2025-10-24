@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -60,6 +61,7 @@ public class User {
         this.updatedAt = updatedAt;
         this.role = role;
         this.enabled = enabled;
+        expenses = new ArrayList<>();
     }
 
     @PrePersist
@@ -141,5 +143,13 @@ public class User {
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+
+    public List<Expense> getExpenses() {
+        return expenses;
+    }
+
+    public void addExpense(Expense expense) {
+        this.expenses.add(expense);
     }
 }

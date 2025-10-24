@@ -20,7 +20,6 @@ public class Expense {
     @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)  // Maps to User's id column
     private User user;
 
-
     @Enumerated(EnumType.STRING)
     @Column(name = "category", nullable = false)
     private ExpenseCategory expenseCategory;
@@ -48,6 +47,17 @@ public class Expense {
         this.description = description;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+    }
+
+    @PrePersist
+    public void onCreate() {
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    public void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
     }
 
     public UUID getId() {
