@@ -1,6 +1,7 @@
 package com.KaanIsmetOkul.Spendid.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -46,6 +47,7 @@ public class User {
     @Column(name = "enabled")
     private boolean enabled;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Expense> expenses;
 

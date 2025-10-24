@@ -38,6 +38,8 @@ public class UserController {
     private JwtTokenProvider jwtTokenProvider;
 
 
+
+
     @GetMapping("/users")
     public List<User> getAllUsers() {
         return userRepository.findAll();
@@ -49,7 +51,7 @@ public class UserController {
         return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
     }
 
-    @GetMapping("/users{id}")
+    @GetMapping("/users/{id}")
     public ResponseEntity<User> getUser(@PathVariable UUID id) {
         User user = userRepository.findById(id).orElseThrow(
                 () -> new ResourceNotFound("Unable to find user: " + id)
@@ -57,7 +59,7 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
-
+    @PostMapping("/login")
     public ResponseEntity<?> validateCredentials(@RequestBody Map<String, String> credentials) throws ValidateUserException {
         try {
             Authentication authentication = authenticationManager.authenticate(
