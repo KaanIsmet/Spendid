@@ -1,10 +1,10 @@
 # Spendid 💰
-
 An AI-powered expense tracking application that makes managing your finances splendid.
 
 ## Overview
-
 Spendid is a modern expense tracking app that leverages AI to automatically categorize expenses, extract data from bank statements, and provide intelligent financial insights. Built with a focus on automation and user experience, Spendid eliminates the tedious manual entry traditionally associated with expense tracking.
+
+**This project is an iteration of Credit Flux, repurposed and enhanced with a fully implemented expense tracking API, migrated to PostgreSQL, and expanded with AI-powered financial management features.**
 
 ## Features
 
@@ -23,13 +23,21 @@ Spendid is a modern expense tracking app that leverages AI to automatically cate
 - Spending pattern analysis
 - Budget recommendations
 
+## What's New in Spendid
+- **PostgreSQL Migration** - Upgraded from MySQL to PostgreSQL for enhanced performance and features
+- **Complete Expense API** - Fully implemented RESTful API for expense management operations
+- **Enhanced Data Models** - Optimized schema for expense tracking and financial analytics
+- **AI Integration** - New Groq API integration for intelligent expense processing
+- **Advanced File Processing** - Support for multiple bank statement formats (CSV, PDF, Excel)
+
 ## Tech Stack
 
 ### Backend
 - **Framework**: Spring Boot
-- **Database**: PostgreSQL
+- **Database**: PostgreSQL (migrated from MySQL)
 - **AI Integration**: Groq API
-- **Authentication**: [To be determined - JWT/OAuth]
+- **Authentication**: OAuth2 with RBAC (inherited from Credit Flux)
+- **Security**: API rate limiting, role-based access control
 
 ### Frontend
 - **Framework**: Next.js (React)
@@ -42,7 +50,6 @@ Spendid is a modern expense tracking app that leverages AI to automatically cate
 - Excel file support (XLSX)
 
 ## Project Structure
-
 ```
 spendid/
 ├── backend/          # Spring Boot API
@@ -71,53 +78,44 @@ spendid/
 - Groq API key
 
 ### Backend Setup
-
 ```bash
 cd backend
-
-# Configure database connection in application.properties
+# Configure PostgreSQL connection in application.properties
 # Add your Groq API key to environment variables
-
 # Build and run
 ./mvnw spring-boot:run
 ```
 
 ### Frontend Setup
-
 ```bash
 cd frontend
-
 # Install dependencies
 npm install
-
 # Configure environment variables
 cp .env.example .env.local
 # Add your API endpoint and any required keys
-
 # Run development server
 npm run dev
 ```
 
 ### Database Setup
-
 ```sql
 -- Create database
 CREATE DATABASE spendid;
-
 -- Run migrations (details TBD)
 ```
 
 ## API Documentation
-
 API documentation will be available at `/swagger-ui` when running the backend locally.
 
 ## Development Roadmap
 
-### Phase 1: Foundation
-- [ ] Fork Credit Flux and rebrand to Spendid
+### Phase 1: Foundation ✅
+- [x] Fork Credit Flux and rebrand to Spendid
+- [x] Migrate database from MySQL to PostgreSQL
+- [x] Implement complete expense API with CRUD operations
 - [ ] Set up Next.js frontend scaffold
-- [ ] Basic CRUD operations for expenses
-- [ ] User authentication
+- [ ] User authentication integration
 
 ### Phase 2: File Processing
 - [ ] Bank statement upload interface
@@ -138,25 +136,22 @@ API documentation will be available at `/swagger-ui` when running the backend lo
 - [ ] Export functionality
 
 ## Contributing
-
 This is currently a personal project. Contributions may be accepted in the future.
 
 ## License
-
 [To be determined]
 
 ## Acknowledgments
-
-- Forked from Credit Flux
+- Built upon Credit Flux foundation
 - Powered by Groq AI
 - Built with Spring Boot and Next.js
 
 ## Contact
-
 [Your contact information]
 
 ---
 
-**Status**: 🚧 In Development
+**Status**: 🚧 In Development  
+**Note**: This project builds on the Credit Flux codebase with significant enhancements for expense tracking and financial management.
 
 Made with ❤️ for better financial clarity
