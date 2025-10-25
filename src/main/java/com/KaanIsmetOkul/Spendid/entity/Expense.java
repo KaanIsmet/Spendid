@@ -1,5 +1,6 @@
 package com.KaanIsmetOkul.Spendid.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
@@ -16,6 +17,7 @@ public class Expense {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID expense_id;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)  // Maps to User's id column
     private User user;
@@ -115,4 +117,8 @@ public class Expense {
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
+
+    public void setUser(User user) { this.user = user; }
+
+    public User getUser() {return user; }
 }

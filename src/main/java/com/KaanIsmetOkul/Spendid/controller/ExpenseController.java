@@ -59,12 +59,11 @@ public class ExpenseController {
     @PostMapping("/expense/user/{id}")
     public ResponseEntity<Expense> saveExpense(@RequestBody Expense expense, @PathVariable UUID id) {
         try {
+
+            User user = userRepository.findById(id)
+                    .orElseThrow(() -> new UserNotFound("Unable to find user with id: " + id));
+            expense.setUser(user);
             Expense savedExpense = expenseService.saveExpense(expense);
-            Optional<User> optionalUser = userRepository.findById(id);
-            if (optionalUser.isEmpty())
-                throw new UserNotFound("Unable to find the user to save expense");
-            User user = optionalUser.get();
-            userService.saveUserExpense(user, expense);
             return new ResponseEntity<>(savedExpense, HttpStatus.CREATED);
         }
 
