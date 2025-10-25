@@ -32,9 +32,6 @@ public class ExpenseController {
     @Autowired
     private ExpenseService expenseService;
 
-    @Autowired
-    private UserService userService;
-
     @GetMapping("/expense")
     public List<Expense> getAllExpenses() {
         return expenseRepository.findAll();
