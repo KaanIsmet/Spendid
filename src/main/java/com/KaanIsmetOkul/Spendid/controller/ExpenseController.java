@@ -32,6 +32,9 @@ public class ExpenseController {
     @Autowired
     private ExpenseService expenseService;
 
+    @Autowired
+    private UserService userService;
+
     @GetMapping("/expense")
     public List<Expense> getAllExpenses() {
         return expenseRepository.findAll();
@@ -57,8 +60,7 @@ public class ExpenseController {
     public ResponseEntity<Expense> saveExpense(@RequestBody Expense expense, @PathVariable UUID id) {
         try {
 
-            User user = userRepository.findById(id)
-                    .orElseThrow(() -> new UserNotFound("Unable to find user with id: " + id));
+            User user = userService.getUser(id);
             expense.setUser(user);
             Expense savedExpense = expenseService.saveExpense(expense);
             return new ResponseEntity<>(savedExpense, HttpStatus.CREATED);
@@ -68,4 +70,12 @@ public class ExpenseController {
             throw new ResourceNotFound("Unable to find expense and userId");
         }
     }
+
+//    @PutMapping("/expense/user/{id}")
+//    public ResponseEntity<Expense> updateExpense(@RequestBody Expense expense, @PathVariable UUID id) {
+//        try {
+//            User user = userService.getUser(id);
+//
+//        }
+//    }
 }

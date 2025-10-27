@@ -41,6 +41,8 @@ public class Expense {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
+    public Expense() {}
+
     public Expense( User user, ExpenseCategory expenseCategory, BigDecimal amount, LocalDateTime date, String description, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.user = user;
         this.expenseCategory = expenseCategory;

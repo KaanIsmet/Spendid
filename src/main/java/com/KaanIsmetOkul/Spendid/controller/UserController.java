@@ -53,9 +53,13 @@ public class UserController {
 
     @GetMapping("/users/{id}")
     public ResponseEntity<User> getUser(@PathVariable UUID id) {
-        User user = userRepository.findById(id).orElseThrow(
-                () -> new ResourceNotFound("Unable to find user: " + id)
-        );
+        User user = userService.getUser(id);
+        return ResponseEntity.ok(user);
+    }
+
+    @PutMapping("/users/{id}")
+    public ResponseEntity<User> updateUser(@RequestBody User userDetails, @PathVariable UUID id) {
+        User user = userService.updateUser(id, userDetails);
         return ResponseEntity.ok(user);
     }
 
