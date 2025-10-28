@@ -41,8 +41,8 @@ public class ExpenseController {
     }
 
     @GetMapping("/expense/user/{id}")
-    public List<Expense> getExpensesById(@PathVariable UUID id) {
-        return expenseRepository.findByUser_Id(id);
+    public List<Expense> getExpensesById(@PathVariable UUID id) throws Exception {
+        return expenseService.getExpenses(id);
     }
 
     @GetMapping("/expense/user/{id}/category/{category}")

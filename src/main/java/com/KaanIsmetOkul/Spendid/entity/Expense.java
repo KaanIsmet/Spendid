@@ -68,10 +68,6 @@ public class Expense {
         return expense_id;
     }
 
-    public User getUserId() {
-        return user;
-    }
-
     public ExpenseCategory getExpenseCategory() {
         return expenseCategory;
     }

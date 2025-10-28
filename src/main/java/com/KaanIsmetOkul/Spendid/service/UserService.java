@@ -23,11 +23,6 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public void saveUserExpense(User user, Expense expense) {
-        user.addExpense(expense);
-        userRepository.save(user);
-    }
-
     public User getUser(UUID id) {
         try {
             return userRepository.findById(id)
