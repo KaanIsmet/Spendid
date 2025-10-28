@@ -50,4 +50,10 @@ public class UserService {
 
         return userRepository.save(user);
     }
+
+    public void deleteUser(UUID id) {
+        if (!userRepository.existsById(id))
+            throw new UserNotFound("Unable to find user with id: " + id);
+        userRepository.deleteById(id);
+    }
 }
