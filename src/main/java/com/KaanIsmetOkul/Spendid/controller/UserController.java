@@ -63,6 +63,17 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
+    @DeleteMapping("/users/{id}")
+    public ResponseEntity<?> deleteUser(@PathVariable UUID id) {
+        try {
+            userService.deleteUser(id);
+            return ResponseEntity.ok("Successfully deleted user");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
     @PostMapping("/login")
     public ResponseEntity<?> validateCredentials(@RequestBody Map<String, String> credentials) throws ValidateUserException {
         try {
