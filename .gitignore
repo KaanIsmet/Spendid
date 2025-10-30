@@ -37,7 +37,3 @@ build/
 
 ### build for jar file ##
 build
-
-### docker files ###
-Dockerfile
-docker-compose.yml
