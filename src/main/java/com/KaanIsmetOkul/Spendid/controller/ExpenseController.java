@@ -71,11 +71,24 @@ public class ExpenseController {
         }
     }
 
-//    @PutMapping("/expense/user/{id}")
-//    public ResponseEntity<Expense> updateExpense(@RequestBody Expense expense, @PathVariable UUID id) {
-//        try {
-//            User user = userService.getUser(id);
-//
-//        }
-//    }
+    @PutMapping("/expense/user/{id}")
+    public ResponseEntity<Expense> updateExpense(@RequestBody Expense expenseDetails, @PathVariable UUID id) {
+        try {
+            Expense expense = expenseService.updateExpense(expenseDetails, id);
+            return ResponseEntity.ok(expense);
+        }
+        catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Unable to find expense and userId");
+        }
+    }
+
+    @DeleteMapping("/expense/{id}")
+    public ResponseEntity<?> deleteExpense(@PathVariable UUID id) {
+        try {
+            expenseService.deleteExpense(id);
+            return ResponseEntity.ok("Successfully deleted expense: " + id);
+        } catch (RuntimeException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
