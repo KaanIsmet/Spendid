@@ -1,6 +1,7 @@
 package com.KaanIsmetOkul.Spendid.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
@@ -24,15 +25,19 @@ public class Expense {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "category", nullable = false)
+    @JsonProperty("category")
     private ExpenseCategory expenseCategory;
 
     @Column(name = "amount", nullable = false)
+    @JsonProperty("amount")
     private BigDecimal amount;
 
     @Column(name = "date", nullable = false)
+    @JsonProperty("date")
     private LocalDateTime date;
 
     @Column(name = "description", length = 255)
+    @JsonProperty("description")
     private String description;
 
     @Column(name = "created_at", nullable = false)
