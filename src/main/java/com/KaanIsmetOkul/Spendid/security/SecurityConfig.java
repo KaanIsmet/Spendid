@@ -38,6 +38,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/login").permitAll()
                         .requestMatchers("/api/v1/users/**").permitAll()  // Allow user registration
                         .requestMatchers("/api/v1/expense/**").permitAll()
+                        .requestMatchers("/api/v1/user/*/import").permitAll()
                         .anyRequest().authenticated())  // Secure everything else
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);

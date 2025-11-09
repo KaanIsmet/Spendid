@@ -20,6 +20,8 @@ public class ExpenseService {
         return expenseRepository.save(expense);
     }
 
+    public List<Expense> saveExpenses(List<Expense> expenses) {return expenseRepository.saveAll(expenses); }
+
     public List<Expense> getExpenses(UUID userId) throws Exception {
         try {
             List<Expense> expenses = expenseRepository.findByUser_Id(userId);
