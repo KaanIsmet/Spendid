@@ -52,6 +52,10 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Expense> expenses;
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Budget> budgets;
+
     public User() {}
 
     public User(String email, String username, String password, String firstName, String lastName, LocalDateTime createdAt, LocalDateTime updatedAt, String role, boolean enabled) {
@@ -65,6 +69,7 @@ public class User {
         this.role = role;
         this.enabled = enabled;
         expenses = new ArrayList<>();
+        budgets = new ArrayList<>();
     }
 
     @PrePersist
@@ -154,5 +159,13 @@ public class User {
 
     public void addExpense(Expense expense) {
         this.expenses.add(expense);
+    }
+
+    public List<Budget> getBudgets() {
+        return budgets;
+    }
+
+    public void setBudgets(List<Budget> budgets) {
+        this.budgets = budgets;
     }
 }

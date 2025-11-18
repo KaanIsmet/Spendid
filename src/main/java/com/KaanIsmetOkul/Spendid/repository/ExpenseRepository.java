@@ -1,7 +1,7 @@
 package com.KaanIsmetOkul.Spendid.repository;
 
 import com.KaanIsmetOkul.Spendid.entity.Expense;
-import com.KaanIsmetOkul.Spendid.entity.ExpenseCategory;
+import com.KaanIsmetOkul.Spendid.entity.Category;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
@@ -14,7 +14,7 @@ import java.util.UUID;
 public interface ExpenseRepository extends JpaRepository<Expense, UUID> {
     List<Expense> findByUser_Id(UUID userId);
 
-    List<Expense> findByUser_IdAndExpenseCategory(UUID userId, ExpenseCategory expenseCategory);
+    List<Expense> findByUser_IdAndExpenseCategory(UUID userId, Category category);
 
     @NonNull
     Optional<Expense> findById(UUID expenseId);

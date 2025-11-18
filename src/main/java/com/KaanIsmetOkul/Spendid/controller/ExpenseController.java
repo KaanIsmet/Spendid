@@ -1,11 +1,10 @@
 package com.KaanIsmetOkul.Spendid.controller;
 
 import com.KaanIsmetOkul.Spendid.entity.Expense;
-import com.KaanIsmetOkul.Spendid.entity.ExpenseCategory;
+import com.KaanIsmetOkul.Spendid.entity.Category;
 import com.KaanIsmetOkul.Spendid.entity.User;
 import com.KaanIsmetOkul.Spendid.exceptionHandling.CategoryNotFound;
 import com.KaanIsmetOkul.Spendid.exceptionHandling.ResourceNotFound;
-import com.KaanIsmetOkul.Spendid.exceptionHandling.UserNotFound;
 import com.KaanIsmetOkul.Spendid.repository.ExpenseRepository;
 import com.KaanIsmetOkul.Spendid.repository.UserRepository;
 import com.KaanIsmetOkul.Spendid.service.ExpenseService;
@@ -16,7 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -48,8 +46,8 @@ public class ExpenseController {
     @GetMapping("/expense/user/{id}/category/{category}")
     public List<Expense> getExpensesByCategory(@PathVariable UUID userId, @PathVariable String category) {
         try {
-            ExpenseCategory expenseCategory = ExpenseCategory.valueOf(category.toUpperCase());
-            return expenseRepository.findByUser_IdAndExpenseCategory(userId, expenseCategory);
+            Category categories = Category.valueOf(category.toUpperCase());
+            return expenseRepository.findByUser_IdAndExpenseCategory(userId, categories);
         }
         catch (IllegalArgumentException e) {
             throw new CategoryNotFound("Unable to find the category for expense");
