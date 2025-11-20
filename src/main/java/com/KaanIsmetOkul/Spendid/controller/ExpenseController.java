@@ -47,7 +47,7 @@ public class ExpenseController {
     public List<Expense> getExpensesByCategory(@PathVariable UUID userId, @PathVariable String category) {
         try {
             Category categories = Category.valueOf(category.toUpperCase());
-            return expenseRepository.findByUser_IdAndExpenseCategory(userId, categories);
+            return expenseRepository.findByUser_IdAndCategory(userId, categories);
         }
         catch (IllegalArgumentException e) {
             throw new CategoryNotFound("Unable to find the category for expense");

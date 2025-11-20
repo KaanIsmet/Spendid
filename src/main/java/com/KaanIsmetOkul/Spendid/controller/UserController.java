@@ -77,6 +77,8 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<?> validateCredentials(@RequestBody Map<String, String> credentials) throws ValidateUserException {
         try {
+
+            System.out.println("Logging endpoint called with username: " + credentials.get("username"));
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             credentials.get("username"),

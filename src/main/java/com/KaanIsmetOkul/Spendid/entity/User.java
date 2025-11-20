@@ -2,6 +2,7 @@ package com.KaanIsmetOkul.Spendid.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -24,8 +25,8 @@ public class User {
     @Column(name = "email")
     private String email;
 
-    @JsonIgnore
-    @Column(name = "password")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @Column(name = "password", nullable = false)
     private String password;
 
     @Column(name = "firstName")
@@ -167,5 +168,13 @@ public class User {
 
     public void setBudgets(List<Budget> budgets) {
         this.budgets = budgets;
+    }
+
+    public boolean containsBudget(Budget budget) {
+        return budgets.contains(budget);
+    }
+
+    public boolean containsExpense(Expense expense) {
+        return expenses.contains(expense);
     }
 }

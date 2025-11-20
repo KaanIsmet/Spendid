@@ -1,5 +1,6 @@
 package com.KaanIsmetOkul.Spendid.service;
 
+import com.KaanIsmetOkul.Spendid.entity.Category;
 import com.KaanIsmetOkul.Spendid.entity.Expense;
 import com.KaanIsmetOkul.Spendid.exceptionHandling.ExpenseNotFound;
 import com.KaanIsmetOkul.Spendid.exceptionHandling.UserNotFound;
@@ -7,6 +8,8 @@ import com.KaanIsmetOkul.Spendid.repository.ExpenseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -56,5 +59,9 @@ public class ExpenseService {
         if (!expenseRepository.existsById(id))
             throw new ExpenseNotFound("Unable to find expense with id: " + id);
         expenseRepository.deleteById(id);
+    }
+
+    public BigDecimal calculateSumAmount(UUID userId, Category category, LocalDate startDate, LocalDate endDate) {
+        return expenseRepository.sumByUserAndCategoryAndDateBetween(userId, category, startDate, endDate);
     }
 }

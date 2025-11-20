@@ -1,6 +1,5 @@
 package com.KaanIsmetOkul.Spendid.security;
 
-import com.KaanIsmetOkul.Spendid.exceptionHandling.SignatureNotFound;
 import com.KaanIsmetOkul.Spendid.service.CustomUserDetailsService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -20,7 +19,6 @@ import java.io.IOException;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
-
     private final CustomUserDetailsService customUserDetailsService;
 
     public JwtAuthenticationFilter(JwtTokenProvider jwtTokenProvider, CustomUserDetailsService customUserDetailsService) {
@@ -29,27 +27,38 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        String path = request.getRequestURI();
+        // Skip JWT filter for public endpoints
+        return path.equals("/api/v1/login") ||
+                path.equals("/api/v1/users") ||
+                path.startsWith("/api/v1/users/"); // This allows POST /api/v1/users for registration
+    }
+
+    @Override
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws ServletException, IOException {
         try {
             String jwt = getJwtFromRequest(request);
+
             if (StringUtils.hasText(jwt) && jwtTokenProvider.validateToken(jwt)) {
                 String username = jwtTokenProvider.getUsernameToken(jwt);
                 UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
+
                 UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());
                 auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
                 SecurityContextHolder.getContext().setAuthentication(auth);
-
             }
         } catch (Exception e) {
             logger.error("JWT validation failed: " + e.getMessage());
         }
-        filterChain.doFilter(request, response);
 
+        filterChain.doFilter(request, response);
     }
 
-    public String getJwtFromRequest(HttpServletRequest request) {
+    private String getJwtFromRequest(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
             return bearerToken.substring(7);
