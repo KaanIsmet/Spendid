@@ -1,12 +1,15 @@
 package com.KaanIsmetOkul.Spendid.controller;
 
 import com.KaanIsmetOkul.Spendid.dto.BudgetResponse;
+import com.KaanIsmetOkul.Spendid.dto.BudgetStatusResponse;
 import com.KaanIsmetOkul.Spendid.dto.CreateBudgetRequest;
 import com.KaanIsmetOkul.Spendid.dto.UpdateBudgetRequest;
 import com.KaanIsmetOkul.Spendid.entity.Budget;
+import com.KaanIsmetOkul.Spendid.entity.BudgetStatus;
 import com.KaanIsmetOkul.Spendid.entity.User;
 import com.KaanIsmetOkul.Spendid.exceptionHandling.DuplicateBudgetException;
 import com.KaanIsmetOkul.Spendid.repository.BudgetRepository;
+import com.KaanIsmetOkul.Spendid.security.CustomUserDetails;
 import com.KaanIsmetOkul.Spendid.service.BudgetService;
 import com.KaanIsmetOkul.Spendid.service.UserService;
 import jakarta.validation.Valid;
@@ -29,17 +32,20 @@ public class BudgetController {
     BudgetService budgetService;
 
     @Autowired
-    BudgetRepository budgetRepository;
-
-    @Autowired
     UserService userService;
 
+
     @GetMapping
-    public List<Budget> getBudgets() { return budgetRepository.findAll();}
+    public ResponseEntity<List<BudgetResponse>> getBudgets(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        List<BudgetResponse> budgets = budgetService.getUserBudgets(userDetails.getId());
+        return ResponseEntity.ok(budgets);
+    }
 
     @GetMapping("/{id}")
-    public List<Budget> getBudgets(@PathVariable UUID id) {
-        return budgetRepository.findByUserId(id);
+    public ResponseEntity<BudgetResponse> getBudgets(@PathVariable UUID id,
+                                   @AuthenticationPrincipal CustomUserDetails userDetails) {
+        BudgetResponse budgetResponse = budgetService.getBudgetById(id, userDetails);
+        return ResponseEntity.ok(budgetResponse);
     }
 
 
@@ -47,24 +53,24 @@ public class BudgetController {
     @PostMapping
     public ResponseEntity<BudgetResponse> createBudget(
             @RequestBody CreateBudgetRequest request,
-            Principal principal
+            @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
 
-        String username = principal.getName();
-        User user = userService.getUser(username);
-
-        BudgetResponse response = budgetService.createBudget(request, user);
-
-        return ResponseEntity.ok(response);
+        if (userDetails == null) {
+            System.out.println("ERROR: User is null in createBudget!");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        BudgetResponse response = budgetService.createBudget(request, userDetails);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<BudgetResponse> updateBudget(
             @PathVariable UUID id,
             @Valid @RequestBody UpdateBudgetRequest request,
-            @AuthenticationPrincipal User user) {
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
 
-        BudgetResponse response = budgetService.updateBudget(id, request, user);
+        BudgetResponse response = budgetService.updateBudget(id, request, userDetails);
         return ResponseEntity.ok(response);
     }
 
@@ -72,10 +78,22 @@ public class BudgetController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteBudget(
             @PathVariable UUID id,
-            @AuthenticationPrincipal User user) {
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
 
-        budgetService.deleteBudget(id, user);
+        budgetService.deleteBudget(id, userDetails);
         return ResponseEntity.noContent().build();  // 204 No Content
+    }
+
+    @GetMapping("/status")
+    public ResponseEntity<List<BudgetStatusResponse>> getAllBudgetStatus(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        List<BudgetStatusResponse> statuses = budgetService.getAllBudgetStatuses(userDetails);
+        return ResponseEntity.ok(statuses);
+    }
+
+    @GetMapping("/status/{id}")
+    public ResponseEntity<BudgetStatusResponse> getBudgetStatus(@PathVariable UUID id, @AuthenticationPrincipal CustomUserDetails userDetails) {
+        BudgetStatusResponse response = budgetService.getBudgetStatus(id, userDetails);
+        return ResponseEntity.ok(response);
     }
 
 }

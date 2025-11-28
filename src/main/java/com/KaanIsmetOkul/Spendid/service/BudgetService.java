@@ -10,8 +10,10 @@ import com.KaanIsmetOkul.Spendid.exceptionHandling.BudgetNotFound;
 import com.KaanIsmetOkul.Spendid.exceptionHandling.UserNotFound;
 import com.KaanIsmetOkul.Spendid.repository.BudgetRepository;
 import com.KaanIsmetOkul.Spendid.repository.ExpenseRepository;
+import com.KaanIsmetOkul.Spendid.security.CustomUserDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.parameters.P;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -34,15 +36,20 @@ public class BudgetService {
     private ExpenseService expenseService;
 
     // 1. Create budget
-    public BudgetResponse createBudget(CreateBudgetRequest request, User user) {
+    public BudgetResponse createBudget(CreateBudgetRequest request, CustomUserDetails userDetails) {
         // - Calculate start/end dates based on period
         // - Check for duplicate budget (same user/category/period)
         // - Create Budget entity
         // - Save to database
         // - Return BudgetResponse
+        if (userDetails == null) {
+            throw new UserNotFound("Unable to find user");
+        }
         BudgetPeriod period = request.getPeriod();
         LocalDate startDate = calculateStartDate(period);
         LocalDate endDate = calculateEndDate(period);
+
+        User user = userDetails.getUser();
 
         Budget budget = new Budget(user, request.getAmount(), request.getCategory(), period, startDate, endDate);
         budgetRepository.save(budget);
@@ -69,13 +76,13 @@ public class BudgetService {
     }
 
     // 3. Get single budget by ID
-    public BudgetResponse getBudgetById(UUID budgetId, User user) {
+    public BudgetResponse getBudgetById(UUID budgetId, CustomUserDetails userDetails) {
         // - Find budget by ID
         // - Verify ownership (user can only see their own budgets)
         // - Convert to BudgetResponse
         // - Return
         try {
-            Optional<Budget> optionalBudget = budgetRepository.findByIdAndUserId(budgetId, user.getId());
+            Optional<Budget> optionalBudget = budgetRepository.findByIdAndUserId(budgetId, userDetails.getId());
             if (optionalBudget.isEmpty())
                 throw new BudgetNotFound("Unable to find budget");
             else {
@@ -92,7 +99,7 @@ public class BudgetService {
     }
 
     // 4. Update budget
-    public BudgetResponse updateBudget(UUID budgetId, UpdateBudgetRequest request, User user) {
+    public BudgetResponse updateBudget(UUID budgetId, UpdateBudgetRequest request, CustomUserDetails userDetails) {
         // - Find budget by ID
         // - Verify ownership
         // - Update amount and/or period
@@ -101,7 +108,7 @@ public class BudgetService {
         // - Return BudgetResponse
 
         try {
-            Optional<Budget> budgetOptional = budgetRepository.findByIdAndUserId(budgetId, user.getId());
+            Optional<Budget> budgetOptional = budgetRepository.findByIdAndUserId(budgetId, userDetails.getId());
             if (budgetOptional.isEmpty())
                 throw new BudgetNotFound("Unable to find budget with id: " + budgetId);
             else {
@@ -125,11 +132,11 @@ public class BudgetService {
     }
 
     // 5. Delete budget
-    public void deleteBudget(UUID budgetId, User user) {
+    public void deleteBudget(UUID budgetId, CustomUserDetails userDetails) {
         // - Find budget by ID
         // - Verify ownership
         // - Delete (soft delete or hard delete)
-        Optional<Budget> budgetOptional = budgetRepository.findByIdAndUserId(budgetId, user.getId());
+        Optional<Budget> budgetOptional = budgetRepository.findByIdAndUserId(budgetId, userDetails.getId());
         if (budgetOptional.isEmpty())
             throw new BudgetNotFound("Unable to find budget with id: " + budgetId);
         else {
@@ -138,7 +145,7 @@ public class BudgetService {
     }
 
     // 6. Get budget status (THE KEY FEATURE)
-    public BudgetStatusResponse getBudgetStatus(UUID budgetId, User user) {
+    public BudgetStatusResponse getBudgetStatus(UUID budgetId, CustomUserDetails userDetails) {
         // - Find budget by ID
         // - Verify ownership
         // - Query expenses: sum amount WHERE category = budget.category AND date BETWEEN start/end
@@ -148,9 +155,9 @@ public class BudgetService {
         // - Return BudgetStatusResponse
 
         try {
-            Budget budget = budgetRepository.findByIdAndUserId(budgetId, user.getId())
+            Budget budget = budgetRepository.findByIdAndUserId(budgetId, userDetails.getId())
                     .orElseThrow(() -> new BudgetNotFound("Unable to find budget with id: " + budgetId));
-            BigDecimal spentAmount = expenseService.calculateSumAmount(user.getId(), budget.getCategory(), budget.getStartDate(), budget.getEndDate());
+            BigDecimal spentAmount = expenseService.calculateSumAmount(userDetails.getId(), budget.getCategory(), budget.getStartDate(), budget.getEndDate());
             if (spentAmount == null) {
                 spentAmount = BigDecimal.ZERO;
             }
@@ -185,10 +192,11 @@ public class BudgetService {
         }
     }
     // 7. Get all budget statuses for user
-    public List<BudgetStatusResponse> getAllBudgetStatuses(User user) {
+    public List<BudgetStatusResponse> getAllBudgetStatuses(CustomUserDetails userDetails) {
         // - Get all user's budgets
         // - For each budget, calculate status (like method #6)
         // - Return list of BudgetStatusResponse
+        User user = userDetails.getUser();
         List<Budget> budgets = user.getBudgets();
         if (budgets.isEmpty())
             throw new BudgetNotFound("The list of budgets for user is empty.");
