@@ -25,6 +25,10 @@ public class ExpenseService {
 
     public List<Expense> saveExpenses(List<Expense> expenses) {return expenseRepository.saveAll(expenses); }
 
+    public List<Expense> getAllExpenses() {
+        return expenseRepository.findAll();
+    }
+
     public List<Expense> getExpenses(UUID userId) throws Exception {
         try {
             List<Expense> expenses = expenseRepository.findByUser_Id(userId);
@@ -63,5 +67,9 @@ public class ExpenseService {
 
     public BigDecimal calculateSumAmount(UUID userId, Category category, LocalDate startDate, LocalDate endDate) {
         return expenseRepository.sumByUserAndCategoryAndDateBetween(userId, category, startDate, endDate);
+    }
+
+    public List<Expense> getExpenseByCategory(UUID uuid, Category category) {
+        return expenseRepository.findByUser_IdAndCategory(uuid, category);
     }
 }

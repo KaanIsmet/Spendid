@@ -40,10 +40,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         try {
             String jwt = getJwtFromRequest(request);
+            System.out.println("=== JWT Filter Debug ===");
+            System.out.println("Path: " + request.getRequestURI());
+            System.out.println("JWT Present: " + (jwt != null));
 
             if (StringUtils.hasText(jwt) && jwtTokenProvider.validateToken(jwt)) {
                 String username = jwtTokenProvider.getUsernameToken(jwt);
                 UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
+
+                System.out.println("UserDetails type: " + userDetails.getClass().getName());
+                System.out.println("Is CustomUserDetails: " + (userDetails instanceof CustomUserDetails));
+
+                if (userDetails instanceof CustomUserDetails) {
+                    CustomUserDetails customUserDetails = (CustomUserDetails) userDetails;
+                    System.out.println("User ID: " + customUserDetails.getId());
+                }
 
                 UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());

@@ -26,10 +26,22 @@ public interface ExpenseRepository extends JpaRepository<Expense, UUID> {
     @NonNull
     void deleteById(UUID expenseId);
 
+    // Fix: Convert LocalDate to LocalDateTime for comparison
+    @Query("SELECT e FROM Expense e WHERE e.user.id = :userId " +
+            "AND e.category = :category " +
+            "AND CAST(e.date AS LocalDate) BETWEEN :startDate AND :endDate")
+    List<Expense> findByUserIdAndCategoryAndDateBetween(
+            @Param("userId") UUID userId,
+            @Param("category") Category category,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate
+    );
+
+    // Fix: Sum query with LocalDate conversion
     @Query("SELECT COALESCE(SUM(e.amount), 0) FROM Expense e " +
             "WHERE e.user.id = :userId " +
             "AND e.category = :category " +
-            "AND e.date BETWEEN :startDate AND :endDate")
+            "AND CAST(e.date AS LocalDate) BETWEEN :startDate AND :endDate")
     BigDecimal sumByUserAndCategoryAndDateBetween(
             @Param("userId") UUID userId,
             @Param("category") Category category,

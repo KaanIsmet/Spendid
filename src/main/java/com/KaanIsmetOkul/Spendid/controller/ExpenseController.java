@@ -7,6 +7,7 @@ import com.KaanIsmetOkul.Spendid.exceptionHandling.CategoryNotFound;
 import com.KaanIsmetOkul.Spendid.exceptionHandling.ResourceNotFound;
 import com.KaanIsmetOkul.Spendid.repository.ExpenseRepository;
 import com.KaanIsmetOkul.Spendid.repository.UserRepository;
+import com.KaanIsmetOkul.Spendid.security.JwtTokenProvider;
 import com.KaanIsmetOkul.Spendid.service.ExpenseService;
 import com.KaanIsmetOkul.Spendid.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,20 +23,17 @@ import java.util.UUID;
 public class ExpenseController {
 
     @Autowired
-    private ExpenseRepository expenseRepository;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
     private ExpenseService expenseService;
 
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private JwtTokenProvider jwtTokenProvider;
+
     @GetMapping("/expense")
     public List<Expense> getAllExpenses() {
-        return expenseRepository.findAll();
+        return expenseService.getAllExpenses();
     }
 
     @GetMapping("/expense/user/{id}")
@@ -47,7 +45,7 @@ public class ExpenseController {
     public List<Expense> getExpensesByCategory(@PathVariable UUID userId, @PathVariable String category) {
         try {
             Category categories = Category.valueOf(category.toUpperCase());
-            return expenseRepository.findByUser_IdAndCategory(userId, categories);
+
         }
         catch (IllegalArgumentException e) {
             throw new CategoryNotFound("Unable to find the category for expense");

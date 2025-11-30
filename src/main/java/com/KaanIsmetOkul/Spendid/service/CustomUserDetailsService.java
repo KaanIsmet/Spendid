@@ -28,6 +28,13 @@ public class CustomUserDetailsService implements UserDetailsService {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UserNotFound("Unable to find user by username " + username));
 
+        System.out.println("User found - ID: " + user.getId() + ", Username: " + user.getUsername());
+
+        // Wrap in CustomUserDetails
+        CustomUserDetails customUserDetails = new CustomUserDetails(user);
+
+        System.out.println("CustomUserDetails created - ID: " + customUserDetails.getId());
+
         return new CustomUserDetails(user);
     }
 

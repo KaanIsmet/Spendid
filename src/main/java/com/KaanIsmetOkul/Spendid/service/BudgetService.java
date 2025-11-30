@@ -197,7 +197,8 @@ public class BudgetService {
         // - For each budget, calculate status (like method #6)
         // - Return list of BudgetStatusResponse
         User user = userDetails.getUser();
-        List<Budget> budgets = user.getBudgets();
+        List<Budget> budgets = budgetRepository.findByUserId(user.getId());
+
         if (budgets.isEmpty())
             throw new BudgetNotFound("The list of budgets for user is empty.");
         else {
