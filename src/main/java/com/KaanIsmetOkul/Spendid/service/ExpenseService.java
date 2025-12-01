@@ -2,7 +2,10 @@ package com.KaanIsmetOkul.Spendid.service;
 
 import com.KaanIsmetOkul.Spendid.entity.Category;
 import com.KaanIsmetOkul.Spendid.entity.Expense;
+import com.KaanIsmetOkul.Spendid.entity.User;
 import com.KaanIsmetOkul.Spendid.exceptionHandling.ExpenseNotFound;
+import com.KaanIsmetOkul.Spendid.exceptionHandling.ResourceNotFound;
+import com.KaanIsmetOkul.Spendid.exceptionHandling.UnauthorizedException;
 import com.KaanIsmetOkul.Spendid.exceptionHandling.UserNotFound;
 import com.KaanIsmetOkul.Spendid.repository.ExpenseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,22 +50,41 @@ public class ExpenseService {
                 .orElseThrow(() -> new ExpenseNotFound("Unable to find expense with id: " + id));
     }
 
-    public Expense updateExpense(Expense expenseDetails, UUID id) {
-        Expense expense = getExpense(id);
-        expense.setUser(expenseDetails.getUser());
-        expense.setExpenseCategory(expenseDetails.getExpenseCategory());
-        expense.setAmount(expenseDetails.getAmount());
-        expense.setUpdatedAt(expenseDetails.getUpdatedAt());
-        expense.setDate(expenseDetails.getDate());
-        expense.setDescription(expenseDetails.getDescription());
+    public Expense updateExpense(UUID expenseId, Expense expenseDetails, User currentUser) {
+        Expense expense = expenseRepository.findById(expenseId)
+                .orElseThrow(() -> new ResourceNotFound("Expense not found with id: " + expenseId));
 
-        return expense;
+        // Security check: only owner can update
+        if (!expense.getUser().getId().equals(currentUser.getId())) {
+            throw new UnauthorizedException("You can only update your own expenses");
+        }
+
+        if (expenseDetails.getDescription() != null) {
+            expense.setDescription(expenseDetails.getDescription());
+        }
+        if (expenseDetails.getAmount() != null) {
+            expense.setAmount(expenseDetails.getAmount());
+        }
+        if (expenseDetails.getCategory() != null) {
+            expense.setCategory(expenseDetails.getCategory());
+        }
+        if (expenseDetails.getDate() != null) {
+            expense.setDate(expenseDetails.getDate());
+        }
+
+        return expenseRepository.save(expense);
     }
 
-    public void deleteExpense(UUID id) {
-        if (!expenseRepository.existsById(id))
-            throw new ExpenseNotFound("Unable to find expense with id: " + id);
-        expenseRepository.deleteById(id);
+    public void deleteExpense(UUID expenseId, User currentUser) {
+        Expense expense = expenseRepository.findById(expenseId)
+                .orElseThrow(() -> new ResourceNotFound("Expense not found with id: " + expenseId));
+
+        // Security check: only owner can delete
+        if (!expense.getUser().getId().equals(currentUser.getId())) {
+            throw new UnauthorizedException("You can only delete your own expenses");
+        }
+
+        expenseRepository.delete(expense);
     }
 
     public BigDecimal calculateSumAmount(UUID userId, Category category, LocalDate startDate, LocalDate endDate) {
@@ -71,5 +93,15 @@ public class ExpenseService {
 
     public List<Expense> getExpenseByCategory(UUID uuid, Category category) {
         return expenseRepository.findByUser_IdAndCategory(uuid, category);
+    }
+
+    public Expense getExpenseById(UUID expenseId, UUID userId) {
+        Expense expense = expenseRepository.findById(expenseId)
+                .orElseThrow(() -> new ExpenseNotFound("Unable to find expense with id: " + expenseId));
+
+        if (!expense.getUser().getId().equals(userId))
+            throw new UnauthorizedException("You can only access your own expenses");
+
+        return expense;
     }
 }

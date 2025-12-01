@@ -73,7 +73,7 @@ public class Expense {
         return expense_id;
     }
 
-    public Category getExpenseCategory() {
+    public Category getCategory() {
         return category;
     }
 
@@ -97,7 +97,7 @@ public class Expense {
         return updatedAt;
     }
 
-    public void setExpenseCategory(Category category) {
+    public void setCategory(Category category) {
         this.category = category;
     }
 
