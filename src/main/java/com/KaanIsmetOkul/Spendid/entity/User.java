@@ -2,7 +2,16 @@ package com.KaanIsmetOkul.Spendid.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+
+import java.util.Collection;
+import java.util.Collections;
+
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -11,7 +20,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "users")
-public class User {
+public class User{
 
     @Id
     @Column(unique = true)
@@ -24,8 +33,8 @@ public class User {
     @Column(name = "email")
     private String email;
 
-    @JsonIgnore
-    @Column(name = "password")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @Column(name = "password", nullable = false)
     private String password;
 
     @Column(name = "firstName")
@@ -43,14 +52,18 @@ public class User {
     private LocalDateTime updatedAt;
 
     @Column(name = "role")
-    private String role;
+    private String role ="USER";
 
     @Column(name = "enabled")
-    private boolean enabled;
+    private boolean enabled = true;
 
     @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Expense> expenses;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Budget> budgets;
 
     public User() {}
 
@@ -65,6 +78,7 @@ public class User {
         this.role = role;
         this.enabled = enabled;
         expenses = new ArrayList<>();
+        budgets = new ArrayList<>();
     }
 
     @PrePersist
@@ -78,17 +92,20 @@ public class User {
         this.updatedAt = LocalDateTime.now();
     }
 
-
     public UUID getId() {
         return id;
     }
 
-    public String getUsername() {
-        return username;
+    public void setId(UUID id) {
+        this.id = id;
     }
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getUsername() {
+        return username;
     }
 
     public String getEmail() {
@@ -99,12 +116,12 @@ public class User {
         this.email = email;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getPassword() {
+        return password;
     }
 
     public String getFirstName() {
@@ -131,11 +148,6 @@ public class User {
         return updatedAt;
     }
 
-
-    public boolean isEnabled() {
-        return enabled;
-    }
-
     public String getRole() {
         return role;
     }
@@ -148,11 +160,31 @@ public class User {
         this.enabled = enabled;
     }
 
+    public boolean isEnabled() {
+        return enabled;
+    }
+
     public List<Expense> getExpenses() {
         return expenses;
     }
 
     public void addExpense(Expense expense) {
         this.expenses.add(expense);
+    }
+
+    public List<Budget> getBudgets() {
+        return budgets;
+    }
+
+    public void setBudgets(List<Budget> budgets) {
+        this.budgets = budgets;
+    }
+
+    public boolean containsBudget(Budget budget) {
+        return budgets.contains(budget);
+    }
+
+    public boolean containsExpense(Expense expense) {
+        return expenses.contains(expense);
     }
 }

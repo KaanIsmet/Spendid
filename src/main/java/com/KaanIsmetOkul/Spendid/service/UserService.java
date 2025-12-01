@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -19,8 +20,20 @@ public class UserService {
     private PasswordEncoder passwordEncoder;
 
     public User saveUser(User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        if (user.getPassword() == null || user.getPassword().isEmpty()) {
+            throw new IllegalArgumentException("Password cannot be null or empty");
+        }
+
+        // Encode the password
+        String encodedPassword = passwordEncoder.encode(user.getPassword());
+        user.setPassword(encodedPassword);
+
+        // Save and return
         return userRepository.save(user);
+    }
+
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
     }
 
     public User getUser(UUID id) {
@@ -30,6 +43,16 @@ public class UserService {
         }
         catch (UserNotFound e) {
             throw new UserNotFound("Unable to find user with id");
+        }
+    }
+
+    public User getUser(String username) {
+        try {
+            return userRepository.findByUsername(username)
+                    .orElseThrow(() -> new UserNotFound("Unable to find user with username: " + username));
+        }
+        catch (UserNotFound e) {
+            throw new UserNotFound("Unable to find user with username");
         }
     }
 

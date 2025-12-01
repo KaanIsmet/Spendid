@@ -26,7 +26,7 @@ public class Expense {
     @Enumerated(EnumType.STRING)
     @Column(name = "category", nullable = false)
     @JsonProperty("category")
-    private ExpenseCategory expenseCategory;
+    private Category category;
 
     @Column(name = "amount", nullable = false)
     @JsonProperty("amount")
@@ -48,9 +48,9 @@ public class Expense {
 
     public Expense() {}
 
-    public Expense( User user, ExpenseCategory expenseCategory, BigDecimal amount, LocalDateTime date, String description, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public Expense(User user, Category category, BigDecimal amount, LocalDateTime date, String description, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.user = user;
-        this.expenseCategory = expenseCategory;
+        this.category = category;
         this.amount = amount;
         this.date = date;
         this.description = description;
@@ -73,8 +73,8 @@ public class Expense {
         return expense_id;
     }
 
-    public ExpenseCategory getExpenseCategory() {
-        return expenseCategory;
+    public Category getCategory() {
+        return category;
     }
 
     public BigDecimal getAmount() {
@@ -97,8 +97,8 @@ public class Expense {
         return updatedAt;
     }
 
-    public void setExpenseCategory(ExpenseCategory expenseCategory) {
-        this.expenseCategory = expenseCategory;
+    public void setCategory(Category category) {
+        this.category = category;
     }
 
     public void setAmount(BigDecimal amount) {

@@ -1,6 +1,6 @@
 package com.KaanIsmetOkul.Spendid.entity;
 
-public enum ExpenseCategory {
+public enum Category {
     DINING("Dining", "Restaurants, cafes, and food delivery"),
     TRAVEL("Travel", "Airlines, hotels, car rentals"),
     GROCERIES("Groceries", "Supermarkets and food stores"),
@@ -12,7 +12,7 @@ public enum ExpenseCategory {
     private String displayName;
     private String description;
 
-    ExpenseCategory(String displayName, String descripion) {
+    Category(String displayName, String descripion) {
         this.displayName = displayName;
         this.description = descripion;
     }
