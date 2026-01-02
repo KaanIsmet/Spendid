@@ -67,7 +67,7 @@ public class ExpenseController {
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         
         try {
-            // Get the full User entity from the service
+            
             User user = userService.getUser(userDetails.getId());
             expense.setUser(user);
             
@@ -85,7 +85,7 @@ public class ExpenseController {
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         
         try {
-            // Get the full User entity from the service
+            
             User user = userService.getUser(userDetails.getId());
             
             Expense expense = expenseService.updateExpense(id, expenseDetails, user);
@@ -101,7 +101,7 @@ public class ExpenseController {
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         
         try {
-            // Get the full User entity from the service
+            
             User user = userService.getUser(userDetails.getId());
             
             expenseService.deleteExpense(id, user);
