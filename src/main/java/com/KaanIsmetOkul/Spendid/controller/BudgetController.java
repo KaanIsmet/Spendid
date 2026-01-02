@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/v1/budgets")
+@RequestMapping("/api/v1/budget")
 public class BudgetController {
 
     @Autowired
