@@ -3,12 +3,14 @@ package com.KaanIsmetOkul.Spendid.controller;
 import com.KaanIsmetOkul.Spendid.entity.Expense;
 import com.KaanIsmetOkul.Spendid.entity.User;
 import com.KaanIsmetOkul.Spendid.exceptionHandling.UserNotFound;
+import com.KaanIsmetOkul.Spendid.security.CustomUserDetails;
 import com.KaanIsmetOkul.Spendid.service.CsvImportService;
 import com.KaanIsmetOkul.Spendid.service.ExpenseService;
 import com.KaanIsmetOkul.Spendid.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -32,12 +34,12 @@ public class CsvImportController {
     @Autowired
     private UserService userService;
 
-    @PostMapping("/user/{id}/import")
-    public ResponseEntity<?> addExpenseByCsv(@PathVariable UUID id, @RequestParam("file")MultipartFile file) throws Exception {
+    @PostMapping("/expense/import")
+    public ResponseEntity<?> addExpenseByCsv(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestParam("file")MultipartFile file) throws Exception {
         try {
-            User user = userService.getUser(id);
+            User user = userDetails.getUser();
             if (user == null) {
-                throw new UserNotFound("Unable to find user with id: " + id);
+                throw new UserNotFound("Unable to find user");
             }
 
 

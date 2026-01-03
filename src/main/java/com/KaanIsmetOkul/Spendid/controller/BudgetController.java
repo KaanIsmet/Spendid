@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/v1/budgets")
+@RequestMapping("/api/v1/budget")
 public class BudgetController {
 
     @Autowired
@@ -74,14 +74,14 @@ public class BudgetController {
         return ResponseEntity.ok(response);
     }
 
-    // Delete budget
+    
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteBudget(
             @PathVariable UUID id,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
 
         budgetService.deleteBudget(id, userDetails);
-        return ResponseEntity.noContent().build();  // 204 No Content
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/status")

@@ -23,7 +23,7 @@ public interface ExpenseRepository extends JpaRepository<Expense, UUID> {
     @NonNull
     Optional<Expense> findById(UUID expenseId);
 
-    @NonNull
+    
     void deleteById(UUID expenseId);
 
     // Fix: Convert LocalDate to LocalDateTime for comparison

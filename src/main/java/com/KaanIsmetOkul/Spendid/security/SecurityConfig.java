@@ -1,6 +1,7 @@
 package com.KaanIsmetOkul.Spendid.security;
 
 import com.KaanIsmetOkul.Spendid.service.CustomUserDetailsService;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,20 +33,40 @@ public class SecurityConfig {
         this.customUserDetailsService = customUserDetailsService;
         this.jwtAuthFilter = jwtAuthFilter;
     }
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests((authorize) -> authorize
-                        .requestMatchers("/api/v1/users").permitAll()
-                        .requestMatchers("/api/v1/expense").permitAll()
+                        // Public endpoints - no authentication required
                         .requestMatchers("/api/v1/login").permitAll()
-                        .requestMatchers("/api/v1/users/**").permitAll()
-                        .requestMatchers("/api/v1/expense/**").permitAll()
-                        .requestMatchers("/api/v1/user/*/import").permitAll()
-                        .requestMatchers("/api/v1/budgets/**").permitAll()
-                        .anyRequest().authenticated())  // Secure everything else
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                        .requestMatchers("/api/v1/users").permitAll()  // User registration
+                        
+                        // Protected endpoints - authentication required
+                        .requestMatchers("/api/v1/expense/**").authenticated()
+                        .requestMatchers("/api/v1/budgets/**").authenticated()
+                        .requestMatchers("/api/v1/users/**").authenticated()
+                        .requestMatchers("/api/v1/user/*/import").authenticated()
+                        
+                        .anyRequest().authenticated()  // Secure everything else
+                )
+                .sessionManagement(session -> 
+                    session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
+                .exceptionHandling(ex -> ex
+                    .authenticationEntryPoint((request, response, authException) -> {
+                        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                        response.setContentType("application/json");
+                        response.setCharacterEncoding("UTF-8");
+                        response.getWriter().write(
+                            "{\"error\": \"Unauthorized\", " +
+                            "\"message\": \"Authentication required. Your session may have expired. Please log in again.\", " +
+                            "\"timestamp\": \"" + java.time.Instant.now() + "\"}"
+                        );
+                    })
+                )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
