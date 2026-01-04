@@ -6,6 +6,20 @@ Spendid is a modern expense tracking app that leverages AI to automatically cate
 
 **This project is an iteration of Credit Flux, repurposed and enhanced with a fully implemented expense tracking API, migrated to PostgreSQL, and expanded with AI-powered financial management features.**
 
+## Architecture
+
+### Technical Architecture
+![Technical Architecture](.png)
+*Overview of the system architecture showing backend, frontend, database, and AI integration layers*
+
+### Entity Relationship Diagram
+![Entity Relationship Diagram](./docs/images/erd-diagram.png)
+*Database schema showing relationships between users, expenses, categories, and budgets*
+
+### User Flow Diagram
+![User Flow Diagram](./docs/images/user-flow-diagram.png)
+*Primary user journeys through expense entry, categorization, and analysis*
+
 ## Features
 
 ### Core Functionality
@@ -66,6 +80,8 @@ spendid/
 │   │   └── lib/
 │   ├── public/
 │   └── package.json
+├── docs/
+│   └── images/       # Documentation images
 └── README.md
 ```
 
