@@ -1,5 +1,5 @@
 # Spendid 💰
-An AI-powered expense tracking application that makes managing your finances splendid.
+An expense and budget tracking application that makes managing your finances splendid.
 
 ## Overview
 Spendid is a modern expense tracking app that leverages AI to automatically categorize expenses, extract data from bank statements, and provide intelligent financial insights. Built with a focus on automation and user experience, Spendid eliminates the tedious manual entry traditionally associated with expense tracking.
