@@ -23,6 +23,8 @@ Spendid is a modern expense tracking app that leverages Spring Boot to automatic
 ## Features
 
 ### Core Functionality
+- **User login and registration** - Have users enter their credentials
+- **Built-in security configurations** Utilized spring security and jwt to authorize/authenticate users
 - **Manual Expense Entry** - Quick and intuitive expense logging
 - **CSV Import** - Upload CSV, PDF, or Excel bank statements for automatic processing
 - **Budget Tracking** - Set and monitor budgets by category
