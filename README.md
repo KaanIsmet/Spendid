@@ -2,9 +2,9 @@
 An expense and budget tracking application that makes managing your finances splendid.
 
 ## Overview
-Spendid is a modern expense tracking app that leverages AI to automatically categorize expenses, extract data from bank statements, and provide intelligent financial insights. Built with a focus on automation and user experience, Spendid eliminates the tedious manual entry traditionally associated with expense tracking.
+Spendid is a modern expense tracking app that leverages Spring Boot to automatically categorize expenses, extract data from csv files, and provide budget tracking. Built with a focus on automation and user experience, Spendid eliminates the tedious manual entry traditionally associated with expense and budget tracking.
 
-**This project is an iteration of Credit Flux, repurposed and enhanced with a fully implemented expense tracking API, migrated to PostgreSQL, and expanded with AI-powered financial management features.**
+**This project is an iteration of Credit Flux, repurposed and enhanced with a fully implemented expense tracking API, migrated to PostgreSQL, and expanded with financial management features.**
 
 ## Architecture
 
