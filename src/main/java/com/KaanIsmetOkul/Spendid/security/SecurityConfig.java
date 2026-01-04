@@ -42,7 +42,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests((authorize) -> authorize
                         // Public endpoints - no authentication required
                         .requestMatchers("/api/v1/login").permitAll()
-                        .requestMatchers("/api/v1/users").permitAll()  // User registration
+                        .requestMatchers("/api/v1/register").permitAll()  // User registration
                         
                         // Protected endpoints - authentication required
                         .requestMatchers("/api/v1/expense/**").authenticated()
