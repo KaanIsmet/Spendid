@@ -9,15 +9,15 @@ Spendid is a modern expense tracking app that leverages AI to automatically cate
 ## Architecture
 
 ### Technical Architecture
-![Technical Architecture](.png)
+![Technical Architecture](./"System Design".png)
 *Overview of the system architecture showing backend, frontend, database, and AI integration layers*
 
 ### Entity Relationship Diagram
-![Entity Relationship Diagram](./docs/images/erd-diagram.png)
+![Entity Relationship Diagram](./Schemas.png)
 *Database schema showing relationships between users, expenses, categories, and budgets*
 
 ### User Flow Diagram
-![User Flow Diagram](./docs/images/user-flow-diagram.png)
+![User Flow Diagram](./User Flow.png)
 *Primary user journeys through expense entry, categorization, and analysis*
 
 ## Features
