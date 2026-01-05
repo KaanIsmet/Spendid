@@ -1,6 +1,12 @@
 # Spendid 💰
 An expense and budget tracking application that makes managing your finances splendid.
 
+## 🎥 Demo
+
+(https://youtu.be/VDKkMBm5_ro)
+
+*8-minute walkthrough covering solution, technical architecture, entity relations, user flow, structure of the codebase, and testing the api*
+
 ## Overview
 Spendid is a modern expense tracking app that leverages Spring Boot to automatically categorize expenses, extract data from csv files, and provide budget tracking. Built with a focus on automation and user experience, Spendid eliminates the tedious manual entry traditionally associated with expense and budget tracking.
 
