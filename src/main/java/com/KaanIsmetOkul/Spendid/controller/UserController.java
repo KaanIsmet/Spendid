@@ -1,11 +1,11 @@
 package com.KaanIsmetOkul.Spendid.controller;
 
 import com.KaanIsmetOkul.Spendid.dto.LoginRequest;
-import com.KaanIsmetOkul.Spendid.dto.LoginResponse;
 import com.KaanIsmetOkul.Spendid.entity.User;
 import com.KaanIsmetOkul.Spendid.security.JwtTokenProvider;
 import com.KaanIsmetOkul.Spendid.service.UserService;
-import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,14 +13,13 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-@CrossOrigin(origins = "http://localhost:3000")
+
 @RestController
 @RequestMapping("/api/v1")
 public class UserController {
@@ -35,24 +34,10 @@ public class UserController {
     private JwtTokenProvider jwtTokenProvider;
 
     // Helper method to get current user from JWT
-    private User getCurrentUserFromToken(HttpServletRequest request) {
-        try {
-            String jwt = getJwtFromRequest(request);
-            String username = jwtTokenProvider.getUsernameToken(jwt);
-            return userService.getUser(username);
-        }
-        catch (RuntimeException e) {
-            throw new RuntimeException("Unable to get user with jwt token");
-        }
-    }
-
-    // Helper method to extract JWT from request
-    private String getJwtFromRequest(HttpServletRequest request) {
-        String bearerToken = request.getHeader("Authorization");
-        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
-            return bearerToken.substring(7);
-        }
-        return null;
+    private User getCurrentUser() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = auth.getName();
+        return userService.getUser(username);
     }
 
     @GetMapping("/users")
@@ -68,22 +53,19 @@ public class UserController {
     }
 
     @GetMapping("/users/me")
-    public ResponseEntity<User> getCurrentUser(HttpServletRequest request) {
-        User currentUser = getCurrentUserFromToken(request);
+    public ResponseEntity<User> getCurrentUserEndpoint() {
+        User currentUser = getCurrentUser();
 
         if (currentUser == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-
         return ResponseEntity.ok(currentUser);
     }
 
     @GetMapping("/users/{id}")
-    public ResponseEntity<User> getUser(
-            @PathVariable UUID id,
-            HttpServletRequest request) {
+    public ResponseEntity<User> getUser(@PathVariable UUID id) {
 
-        User currentUser = getCurrentUserFromToken(request);
+        User currentUser = getCurrentUser();
 
         if (currentUser == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -99,11 +81,9 @@ public class UserController {
     }
 
     @PutMapping("/users/me")
-    public ResponseEntity<User> updateCurrentUser(
-            @RequestBody User userUpdates,
-            HttpServletRequest request) {
+    public ResponseEntity<User> updateCurrentUser(@RequestBody User userUpdates) {
 
-        User currentUser = getCurrentUserFromToken(request);
+        User currentUser = getCurrentUser();
 
         if (currentUser == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -116,10 +96,9 @@ public class UserController {
     @PutMapping("/users/{id}")
     public ResponseEntity<User> updateUser(
             @PathVariable UUID id,
-            @RequestBody User userUpdates,
-            HttpServletRequest request) {
+            @RequestBody User userUpdates) {
 
-        User currentUser = getCurrentUserFromToken(request);
+        User currentUser = getCurrentUser();
 
         if (currentUser == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -135,8 +114,8 @@ public class UserController {
     }
 
     @DeleteMapping("/users/me")
-    public ResponseEntity<Void> deleteCurrentUser(HttpServletRequest request) {
-        User currentUser = getCurrentUserFromToken(request);
+    public ResponseEntity<Void> deleteCurrentUser() {
+        User currentUser = getCurrentUser();
 
         if (currentUser == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -147,11 +126,9 @@ public class UserController {
     }
 
     @DeleteMapping("/users/{id}")
-    public ResponseEntity<Void> deleteUser(
-            @PathVariable UUID id,
-            HttpServletRequest request) {
+    public ResponseEntity<Void> deleteUser(@PathVariable UUID id) {
 
-        User currentUser = getCurrentUserFromToken(request);
+        User currentUser = getCurrentUser();
 
         if (currentUser == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -167,7 +144,7 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
@@ -178,14 +155,32 @@ public class UserController {
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
             String token = jwtTokenProvider.generateToken(authentication);
+            Cookie cookie = new Cookie("token", token);
+            cookie.setHttpOnly(true);
+            cookie.setSecure(true);
+            cookie.setPath("/");
+            cookie.setMaxAge(36000);
+            response.addCookie(cookie);
 
             // Get user to return ID
             User user = userService.getUser(loginRequest.getUsername());
 
-            return ResponseEntity.ok(new LoginResponse(token, user.getId()));
+            return ResponseEntity.ok(Map.of("userId", user.getId()));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(Map.of("error", "Invalid username or password"));
         }
     }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(HttpServletResponse response) {
+        Cookie cookie = new Cookie("token", null);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
+
+        return ResponseEntity.ok().build();
+    }
+
 }
